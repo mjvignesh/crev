@@ -171,6 +171,17 @@ To find every repo where crev was set up:
 find ~ -name ".crev.toml" 2>/dev/null
 ```
 
+## Security
+
+`crev` runs entirely on your machine. The only network calls are made by the `claude` CLI itself, going to Anthropic's API. Your code never touches a third-party SaaS.
+
+A few specific protections worth noting:
+
+- **Auto-fix patches are sandboxed.** When you run `crev --fix`, every patch from the model is validated before being applied: absolute paths, parent-directory traversal (`../`), oversized patches, and patches with no file paths are all rejected. `git apply` is invoked with `--directory` pointing at the repo root, so even if validation missed something, git itself refuses to write outside the working tree.
+- **Every fix requires explicit confirmation.** `crev` never silently applies a patch. You see the diff and answer y/n.
+- **Severity & category values from the model are validated.** Unknown values are coerced to safe defaults so a malformed response can't crash the tool or bypass severity filters.
+- **`CREV_CLAUDE_BIN` overrides require an executable file.** Setting it to a non-executable file is rejected, so misconfiguration can't silently invoke unexpected binaries.
+
 ## Troubleshooting
 
 **`error: The 'claude' CLI was not found on PATH`**
@@ -190,7 +201,7 @@ Make sure `bare_mode = true` (the default). Without it, `claude` loads project-l
 PRs welcome. See `CONTRIBUTING.md`.
 
 ```bash
-git clone https://github.com/yourname/crev
+git clone https://github.com/mjvignesh/crev
 cd crev
 pip install -e ".[dev]"
 pytest

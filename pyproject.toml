@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "crev"
-version = "0.1.0"
+version = "0.1.1"
 description = "AI-powered code review using Claude Code — runs locally as a pre-commit hook. Uses your existing Claude subscription."
 readme = "README.md"
 license = { text = "MIT" }
